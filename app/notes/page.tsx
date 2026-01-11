@@ -1,3 +1,5 @@
+import NotesClient from './Notes.client';
+
 export default function NotesPage() {
-  return <main>Notes page (in progress)</main>;
+  return <NotesClient />;
 }

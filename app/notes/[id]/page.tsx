@@ -1,3 +1,5 @@
+import NoteDetailsClient from './NoteDetails.client';
+
 export default function NoteDetailsPage() {
-  return <main>Note details (in progress)</main>;
+  return <NoteDetailsClient />;
 }
