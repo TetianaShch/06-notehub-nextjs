@@ -5,9 +5,13 @@ import { fetchNotes } from '@/lib/api';
 import NoteList from '@/components/NoteList/NoteList';
 
 export default function NotesClient() {
+  const page = 1;
+  const perPage = 10;
+  const search = '';
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ['notes'],
-    queryFn: () => fetchNotes({ page: 1, perPage: 10, search: '' }),
+    queryKey: ['notes', { page, perPage, search }],
+    queryFn: () => fetchNotes({ page, perPage, search }),
   });
 
   if (isLoading) {
