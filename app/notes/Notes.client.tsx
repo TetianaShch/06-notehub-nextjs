@@ -79,9 +79,9 @@ export default function NotesClient() {
 
       {isFetching && <p>Updating...</p>}
 
-      <NoteList notes={data.notes} onDelete={removeNote} isDeleting={isDeleting} />
-
       <Pagination page={page} totalPages={data.totalPages} onPageChange={setPage} />
+
+      <NoteList notes={data.notes} onDelete={removeNote} isDeleting={isDeleting} />
 
       {isModalOpen && (
         <Modal onClose={closeModal}>
