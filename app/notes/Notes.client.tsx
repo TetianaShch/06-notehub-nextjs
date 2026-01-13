@@ -57,9 +57,11 @@ export default function NotesClient() {
 
       {isFetching && <p>Updating...</p>}
 
-      <Pagination page={page} totalPages={data.totalPages} onPageChange={setPage} />
+      {data.totalPages > 1 && (
+        <Pagination page={page} totalPages={data.totalPages} onPageChange={setPage} />
+      )}
 
-      <NoteList notes={data.notes} />
+      {data.notes.length === 0 ? <p>No notes found.</p> : <NoteList notes={data.notes} />}
 
       {isModalOpen && (
         <Modal onClose={closeModal}>
