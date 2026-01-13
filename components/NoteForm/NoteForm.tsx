@@ -2,6 +2,10 @@
 
 import * as Yup from 'yup';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { createNote } from '@/lib/api';
+
 import css from './NoteForm.module.css';
 
 export type NoteTag = 'Todo' | 'Work' | 'Personal' | 'Meeting' | 'Shopping';
@@ -14,7 +18,6 @@ export interface CreateNotePayload {
 
 interface NoteFormProps {
   onCancel: () => void;
-  onSubmit: (values: CreateNotePayload) => void;
 }
 
 const initialValues: CreateNotePayload = {
@@ -31,12 +34,22 @@ const validationSchema = Yup.object({
     .required('Tag is required'),
 });
 
-export default function NoteForm({ onCancel, onSubmit }: NoteFormProps) {
+export default function NoteForm({ onCancel }: NoteFormProps) {
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: createNote,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['notes'] });
+      onCancel();
+    },
+  });
+
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
-      onSubmit={values => onSubmit(values)}
+      onSubmit={values => mutate(values)}
     >
       {({ isValid, dirty }) => (
         <Form className={css.form}>
@@ -68,8 +81,12 @@ export default function NoteForm({ onCancel, onSubmit }: NoteFormProps) {
             <button type="button" className={css.cancelButton} onClick={onCancel}>
               Cancel
             </button>
-            <button type="submit" className={css.submitButton} disabled={!isValid || !dirty}>
-              Create note
+            <button
+              type="submit"
+              className={css.submitButton}
+              disabled={!isValid || !dirty || isPending}
+            >
+              {isPending ? 'Creating...' : 'Create note'}
             </button>
           </div>
         </Form>

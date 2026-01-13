@@ -4,8 +4,7 @@ import { useMemo, useState } from 'react';
 import { useDebounce } from 'use-debounce';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { createNote, deleteNote, fetchNotes } from '@/lib/api';
-import type { CreateNotePayload } from '@/components/NoteForm/NoteForm';
+import { deleteNote, fetchNotes } from '@/lib/api';
 
 import NoteList from '@/components/NoteList/NoteList';
 import SearchBox from '@/components/SearchBox/SearchBox';
@@ -44,14 +43,6 @@ export default function NotesClient() {
     },
   });
 
-  const { mutate: addNote, isPending: isCreating } = useMutation({
-    mutationFn: createNote,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notes'] });
-      setIsModalOpen(false);
-    },
-  });
-
   const handleSearchChange = (value: string) => {
     setSearch(value);
     setPage(1);
@@ -59,10 +50,6 @@ export default function NotesClient() {
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-
-  const handleCreate = (values: CreateNotePayload) => {
-    addNote(values);
-  };
 
   if (isLoading) return <p>Loading, please wait...</p>;
   if (error || !data) return <p>Something went wrong.</p>;
@@ -85,8 +72,7 @@ export default function NotesClient() {
 
       {isModalOpen && (
         <Modal onClose={closeModal}>
-          <NoteForm onCancel={closeModal} onSubmit={handleCreate} />
-          {isCreating && <p>Creating...</p>}
+          <NoteForm onCancel={closeModal} />
         </Modal>
       )}
     </main>

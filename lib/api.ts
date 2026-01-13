@@ -20,7 +20,7 @@ export interface FetchNotesParams {
   search?: string;
 }
 
-interface CreateNotePayload {
+ export interface CreateNotePayload {
   title: string;
   content: string;
   tag: string;
