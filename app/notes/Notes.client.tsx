@@ -2,9 +2,9 @@
 
 import { useMemo, useState } from 'react';
 import { useDebounce } from 'use-debounce';
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
-import { deleteNote, fetchNotes } from '@/lib/api';
+import { fetchNotes } from '@/lib/api';
 
 import NoteList from '@/components/NoteList/NoteList';
 import SearchBox from '@/components/SearchBox/SearchBox';
@@ -15,8 +15,6 @@ import NoteForm from '@/components/NoteForm/NoteForm';
 import css from './NotesPage.module.css';
 
 export default function NotesClient() {
-  const queryClient = useQueryClient();
-
   const [page, setPage] = useState<number>(1);
   const perPage = 10;
 
@@ -34,13 +32,6 @@ export default function NotesClient() {
     queryKey,
     queryFn: () => fetchNotes({ page, perPage, search: debouncedSearch }),
     placeholderData: keepPreviousData,
-  });
-
-  const { mutate: removeNote, isPending: isDeleting } = useMutation({
-    mutationFn: deleteNote,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notes'] });
-    },
   });
 
   const handleSearchChange = (value: string) => {
@@ -68,7 +59,7 @@ export default function NotesClient() {
 
       <Pagination page={page} totalPages={data.totalPages} onPageChange={setPage} />
 
-      <NoteList notes={data.notes} onDelete={removeNote} isDeleting={isDeleting} />
+      <NoteList notes={data.notes} />
 
       {isModalOpen && (
         <Modal onClose={closeModal}>
